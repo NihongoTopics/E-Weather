@@ -68,9 +68,9 @@
         const diff = tempTodayF - tempYestF;
         let mark = '';
         if (diff >= 6) {
-          mark = ' +';
+          mark = '⁺';
         } else if (diff <= -6) {
-          mark = ' –';
+          mark = '⁻';
         }
         document.getElementById('result').textContent = `${eScale}${mark}`;
       })

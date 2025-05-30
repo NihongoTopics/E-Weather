@@ -44,9 +44,9 @@
       const e = Math.floor(tF / 10);
       const diff = tF - yF;
       let mark = '';
-      if (diff >= 6) mark = '+';
-      else if (diff <= -6) mark = '–';
-      return `${e}°E${mark}`;
+      if (diff >= 6) mark = '⁺';
+      else if (diff <= -6) mark = '⁻';
+      return `${e}${mark}°E`;
     }
     document.getElementById('escaleForm').addEventListener('submit', function(e){
       e.preventDefault();
