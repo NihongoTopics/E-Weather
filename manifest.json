@@ -1,6 +1,6 @@
 {
   "name": "東京都の気温",
-  "short_name": "気温°E",
+  "short_name": "東京都の気温",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
