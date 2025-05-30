@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title> 東京都の気温 </title>
+  <style>
+    body { font-family: Helvetica Neue; padding: 2em; background: white; color: #333; text-align: center;}
+    h1 { font-size: 1.5em; }
+    #result { font-size: 16em; margin-top: 0em; }
+  </style>
+</head>
+<body>
+  <h1> </h1>
+  <div id="result"> </div>
+  <p>東京都のきょうの予想最高気温を °E (度E) で表示します。</p>
+  <p>数字が大きいほど気温が高く、7°E 程度が過ごしやすい気温です。東京都の場合、真冬の最高気温がおよそ 4°E、真夏の最高気温がおよそ 9°E になります。</p>
+  <p>+/– は前日との気温の比較を示します。前日と同じくらいの気温のときは記号なし、暖かければ +、涼しければ – を表示します。</p>
+  <p><a href="help.html">詳細</a></p>
+  <script>
+    // 東京の緯度経度
+    const lat = 35.6895;
+    const lon = 139.6917;
+
+    // 日付取得
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = ('0' + (today.getMonth() + 1)).slice(-2);
+    const dd = ('0' + today.getDate()).slice(-2);
+
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    // 昨日
+    const yest = new Date(today);
+    yest.setDate(today.getDate() - 1);
+    const yyyyy = yest.getFullYear();
+    const ymm = ('0' + (yest.getMonth() + 1)).slice(-2);
+    const ydd = ('0' + yest.getDate()).slice(-2);
+    const yestStr = `${yyyyy}-${ymm}-${ydd}`;
+
+    // Open-MeteoのAPIから昨日と今日の最高気温(摂氏)取得
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max&timezone=Asia%2FTokyo&start_date=${yestStr}&end_date=${todayStr}`;
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const temps = data.daily.temperature_2m_max;
+        if (!temps || temps.length < 2) {
+          document.getElementById('result').textContent = '気温データが取得できません。';
+          return;
+        }
+        // 昨日、今日の最高気温(摂氏)
+        const tempYestC = temps[0];
+        const tempTodayC = temps[1];
+        // 華氏へ変換
+        const tempYestF = tempYestC * 9 / 5 + 32;
+        const tempTodayF = tempTodayC * 9 / 5 + 32;
+        // Eスケール
+        const eScale = Math.floor(tempTodayF / 10);
+        // 差
+        const diff = tempTodayF - tempYestF;
+        let mark = '';
+        if (diff >= 6) {
+          mark = ' +';
+        } else if (diff <= -6) {
+          mark = ' –';
+        }
+        document.getElementById('result').textContent = `${eScale}${mark}`;
+      })
+      .catch(() => {
+        document.getElementById('result').textContent = 'データ取得エラー';
+      });
+  </script>
+</body>
+</html>

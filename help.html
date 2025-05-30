@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>度Eについて</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { font-family: Helvetica Neue; background: white; margin: 0; padding: 0; }
+    main { max-width: 400px; margin: 48px auto; background: #fff; border-radius: 20px; box-shadow: 0 4px 18px #0001; padding: 36px 24px 28px; }
+    h1 { font-size: 1.6rem; color: #28375c; margin-bottom: 16px; }
+    .ekey { font-size: 2.7rem; font-weight: bold; color: #1b5e20; letter-spacing: 2px; margin: 20px 0; }
+    label, input { font-size: 1rem; }
+    input[type="number"] { width: 70px; padding: 3px 7px; border-radius: 7px; border: 1px solid #aaa; }
+    button { padding: 6px 16px; font-size: 1.05rem; border-radius: 10px; background: #1b5e20; color: #fff; border: none; cursor: pointer; margin-left: 8px;}
+    .result { margin-top: 20px; font-size: 1.1rem; color: #374151;}
+    @media (max-width: 450px) {
+      main { padding: 18px 4vw 20px; }
+      .ekey { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p>°E（度E）は、筆者が考案した新しい気温の表示方式です。身支度の際に大雑把な気温と前日との比較を直感的に把握できるように、以下の計算式に従って算出します。</p>
+    <p>°E = °F ÷ 10 <br> 余りを切り捨てます。</p>
+    <p>前日の気温とその日の最高気温（予報）を°Fで比較し、差が6度以上なら + または – の記号を付与します。</p>
+    <p>天気データの取得にはOpen-Meteo (open-meteo.com) のAPIを使用しています。</p>
+    <p> <a href="index.html">戻る</a> </p>
+    <h1>計算機</h1>
+    <form id="escaleForm" autocomplete="off">
+      <label>昨日の最高気温（摂氏）: <input type="number" step="0.1" id="yesterdayC" required></label><br><br>
+      <label>今日の最高気温（摂氏）: <input type="number" step="0.1" id="todayC" required></label>
+      <button type="submit">表示</button>
+    </form>
+    <div class="result" id="result"></div>
+  </main>
+  <script>
+    function cToF(c) {
+      return c * 9 / 5 + 32;
+    }
+    function escale(yesterdayC, todayC) {
+      const yF = cToF(yesterdayC);
+      const tF = cToF(todayC);
+      const e = Math.floor(tF / 10);
+      const diff = tF - yF;
+      let mark = '';
+      if (diff >= 6) mark = '+';
+      else if (diff <= -6) mark = '–';
+      return `${e}°E${mark}`;
+    }
+    document.getElementById('escaleForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const y = parseFloat(document.getElementById('yesterdayC').value);
+      const t = parseFloat(document.getElementById('todayC').value);
+      if (isNaN(y) || isNaN(t)) {
+        document.getElementById('result').textContent = '正しい数値を入力してください。';
+        return;
+      }
+      const val = escale(y, t);
+      document.getElementById('result').innerHTML = `<span class="ekey">${val}</span>`;
+    });
+  </script>
+</body>
+</html>
